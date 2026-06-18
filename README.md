@@ -62,7 +62,7 @@ Le backend suit une architecture en couches (modèle / contrôleur / route) avec
 ### 1. Cloner le dépôt
 
 ```bash
-git clone <url-du-repository>
+git clone https://github.com/Lorraine301/gestion-produits.git
 cd gestion-produits
 ```
 
@@ -144,4 +144,4 @@ Catégories disponibles : `Électronique`, `Vêtements`, `Alimentation`, `Mobili
 
 ## Auteur
 
-Lorraine Agnès — Étudiante en cycle ingénieur, filière Génie Logiciel et Systèmes Intelligents (FST Tanger)
+Andriamasy Lorraine Agnès RAHELIARISOA — Étudiante en cycle ingénieur, filière Logiciels et Systèmes Intelligents (FST Tanger)
