@@ -1,0 +1,22 @@
+@if (isOpen()) {
+  <div class="overlay" (click)="onCancel()">
+    <div
+      class="dialog"
+      role="alertdialog"
+      aria-modal="true"
+      [attr.aria-label]="title()"
+      (click)="$event.stopPropagation()"
+    >
+      <h3 class="dialog__title">{{ title() }}</h3>
+      <p class="dialog__message">{{ message() }}</p>
+      <div class="dialog__actions">
+        <button type="button" class="btn btn--ghost" (click)="onCancel()">
+          Annuler
+        </button>
+        <button type="button" class="btn btn--danger" (click)="onConfirm()">
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+}

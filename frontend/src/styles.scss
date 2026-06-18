@@ -1,0 +1,163 @@
+/* You can add global styles to this file, and also import other style files */
+
+// ============================================================
+// DESIGN TOKENS — Gestion de Produits
+// Fond blanc net et aéré, bleu pétrole profond pour les titres et
+// l'accent signature, sauge en complément pour les états positifs.
+// Typographie sans-serif moderne et assertive (Sora pour les titres,
+// Inter pour le corps) — direction corporate claire, sans serif.
+// ============================================================
+:root {
+  // Couleurs de fond
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f3f7f6;
+  --color-border: #dfe7e6;
+
+  // Texte
+  --color-text-primary: #16302e;
+  --color-text-secondary: #5c7674;
+  --color-text-muted: #92a6a4;
+
+  // Accent principal — bleu pétrole
+  --color-accent: #2c5f5d;
+  --color-accent-hover: #224a48;
+  --color-accent-text: #f4f9f8;
+
+  // États
+  --color-success: #5a8c6b;
+  --color-success-bg: rgba(90, 140, 107, 0.1);
+  --color-danger: #b1574a;
+  --color-danger-bg: rgba(177, 87, 74, 0.1);
+  --color-warning: #b08a3a;
+  --color-warning-bg: rgba(176, 138, 58, 0.1);
+
+  // Typographie
+  --font-display: 'Sora', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+  // Échelle d'espacement
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+
+  // Rayons et ombres
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 2px rgba(22, 48, 46, 0.05);
+  --shadow-md: 0 4px 16px rgba(22, 48, 46, 0.07);
+  --shadow-lg: 0 16px 40px rgba(22, 48, 46, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+button {
+  font-family: var(--font-body);
+}
+
+// Focus visible cohérent sur toute l'application (accessibilité)
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// ============================================================
+// Classes de boutons partagées (utilisées dans toute l'application)
+// ============================================================
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+
+  &:hover:not(:disabled) {
+    background: var(--color-accent-hover);
+  }
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-text-secondary);
+    color: var(--color-text-primary);
+  }
+}
+
+.btn--danger {
+  background: var(--color-danger);
+  color: #fdf6f4;
+
+  &:hover:not(:disabled) {
+    background: #94483c;
+  }
+}
+
+.btn--sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.8rem;
+}
+
+

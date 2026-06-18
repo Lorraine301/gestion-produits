@@ -1,0 +1,21 @@
+# Dépendances
+node_modules/
+
+# Variables d'environnement (contiennent des identifiants sensibles)
+.env
+
+# Build
+dist/
+.angular/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Éditeurs
+.vscode/*
+!.vscode/extensions.json

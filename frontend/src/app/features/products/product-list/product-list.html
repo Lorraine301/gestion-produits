@@ -1,0 +1,118 @@
+<div class="page">
+  <header class="page__header">
+    <div class="page__heading">
+      <h1>Catalogue de produits</h1>
+      <p class="page__subtitle">
+        {{ products().length }} produit{{ products().length !== 1 ? 's' : '' }} ·
+        valeur totale du stock : {{ totalStockValue() | number: '1.2-2' }} MAD
+      </p>
+    </div>
+    <a routerLink="/produits/nouveau" class="btn btn--primary">+ Nouveau produit</a>
+  </header>
+
+  <div class="toolbar">
+    <input
+      type="search"
+      class="toolbar__search"
+      placeholder="Rechercher un produit par nom…"
+      [ngModel]="searchTerm()"
+      (ngModelChange)="searchTerm.set($event)"
+      aria-label="Rechercher un produit"
+    />
+    <select
+      class="toolbar__filter"
+      [ngModel]="selectedCategory()"
+      (ngModelChange)="selectedCategory.set($event)"
+      aria-label="Filtrer par catégorie"
+    >
+      <option value="">Toutes les catégories</option>
+      @for (cat of categories; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+  </div>
+
+  @if (isLoading()) {
+    <div class="state-message">Chargement des produits…</div>
+  } @else if (loadError()) {
+    <div class="state-message state-message--error">
+      <p>Impossible de contacter le serveur.</p>
+      <button type="button" class="btn btn--ghost btn--sm" (click)="fetchProducts()">
+        Réessayer
+      </button>
+    </div>
+  } @else if (filteredProducts().length === 0 && products().length === 0) {
+    <div class="empty-state">
+      <p class="empty-state__title">Aucun produit pour le moment</p>
+      <p class="empty-state__text">Ajoutez votre premier produit pour commencer à constituer votre catalogue.</p>
+      <a routerLink="/produits/nouveau" class="btn btn--primary">+ Ajouter un produit</a>
+    </div>
+  } @else if (filteredProducts().length === 0) {
+    <div class="empty-state">
+      <p class="empty-state__title">Aucun résultat</p>
+      <p class="empty-state__text">Aucun produit ne correspond à votre recherche.</p>
+    </div>
+  } @else {
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th class="table__num">Prix</th>
+            <th class="table__num">Stock</th>
+            <th class="table__actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of filteredProducts(); track product._id) {
+            <tr>
+              <td>
+                <div class="product-cell">
+                  <span class="product-cell__name">{{ product.name }}</span>
+                  <span class="product-cell__description">{{ product.description }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="badge">{{ product.category }}</span>
+              </td>
+              <td class="table__num" data-label="Prix">{{ product.price | number: '1.2-2' }} MAD</td>
+              <td class="table__num" data-label="Stock">
+                <span
+                  class="stock"
+                  [class.stock--low]="isLowStock(product)"
+                  [class.stock--out]="isOutOfStock(product)"
+                >
+                  {{ product.quantity }}
+                </span>
+              </td>
+              <td class="table__actions">
+                <a
+                  [routerLink]="['/produits', product._id, 'modifier']"
+                  class="btn btn--ghost btn--sm"
+                >
+                  Modifier
+                </a>
+                <button
+                  type="button"
+                  class="btn btn--danger btn--sm"
+                  (click)="requestDelete(product)"
+                >
+                  Supprimer
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<app-confirm-dialog
+  [isOpen]="productToDelete() !== null"
+  title="Supprimer ce produit ?"
+  [message]="'Cette action est définitive. \'' + (productToDelete()?.name ?? '') + '\' sera supprimé du catalogue.'"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()"
+/>

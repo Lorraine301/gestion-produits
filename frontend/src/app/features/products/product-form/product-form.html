@@ -1,0 +1,107 @@
+<div class="page">
+  <header class="page__header">
+    <a routerLink="/produits" class="back-link">← Retour à la liste</a>
+    <h1>{{ isEditMode ? 'Modifier le produit' : 'Nouveau produit' }}</h1>
+    <p class="page__subtitle">
+      {{ isEditMode
+        ? 'Mettez à jour les informations de ce produit.'
+        : 'Renseignez les informations du produit à ajouter au catalogue.' }}
+    </p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="loading-state">Chargement du produit…</div>
+  } @else {
+    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form__row">
+        <label class="form__label" for="name">Nom du produit</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          class="form__input"
+          [class.form__input--error]="isFieldInvalid('name')"
+          placeholder="Ex. Casque audio sans fil"
+        />
+        @if (isFieldInvalid('name')) {
+          <span class="form__error">Le nom du produit est obligatoire.</span>
+        }
+      </div>
+
+      <div class="form__row">
+        <label class="form__label" for="description">Description</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          class="form__input form__input--textarea"
+          [class.form__input--error]="isFieldInvalid('description')"
+          placeholder="Décrivez brièvement le produit…"
+          rows="4"
+        ></textarea>
+        @if (isFieldInvalid('description')) {
+          <span class="form__error">La description est obligatoire.</span>
+        }
+      </div>
+
+      <div class="form__grid">
+        <div class="form__row">
+          <label class="form__label" for="price">Prix (MAD)</label>
+          <input
+            id="price"
+            type="number"
+            step="0.01"
+            min="0"
+            formControlName="price"
+            class="form__input"
+            [class.form__input--error]="isFieldInvalid('price')"
+            placeholder="0.00"
+          />
+          @if (isFieldInvalid('price')) {
+            <span class="form__error">Indiquez un prix valide (≥ 0).</span>
+          }
+        </div>
+
+        <div class="form__row">
+          <label class="form__label" for="quantity">Quantité en stock</label>
+          <input
+            id="quantity"
+            type="number"
+            min="0"
+            formControlName="quantity"
+            class="form__input"
+            [class.form__input--error]="isFieldInvalid('quantity')"
+            placeholder="0"
+          />
+          @if (isFieldInvalid('quantity')) {
+            <span class="form__error">Indiquez une quantité valide (≥ 0).</span>
+          }
+        </div>
+      </div>
+
+      <div class="form__row">
+        <label class="form__label" for="category">Catégorie</label>
+        <select
+          id="category"
+          formControlName="category"
+          class="form__input form__input--select"
+          [class.form__input--error]="isFieldInvalid('category')"
+        >
+          <option value="" disabled>Sélectionnez une catégorie</option>
+          @for (cat of categories; track cat) {
+            <option [value]="cat">{{ cat }}</option>
+          }
+        </select>
+        @if (isFieldInvalid('category')) {
+          <span class="form__error">Veuillez sélectionner une catégorie.</span>
+        }
+      </div>
+
+      <div class="form__actions">
+        <a routerLink="/produits" class="btn btn--ghost">Annuler</a>
+        <button type="submit" class="btn btn--primary" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Enregistrement…' : (isEditMode ? 'Enregistrer les modifications' : 'Créer le produit') }}
+        </button>
+      </div>
+    </form>
+  }
+</div>
