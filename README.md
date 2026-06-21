@@ -80,7 +80,7 @@ Le backend suit une architecture en couches (modèle / contrôleur / route) avec
 ### 1. Cloner le dépôt
 
 ```bash
-git clone <url-du-repository>
+git clone https://github.com/Lorraine301/gestion-produits.git
 cd gestion-produits
 ```
 
@@ -192,4 +192,8 @@ Le modèle de données ne contraint plus la catégorie à une liste fermée (enu
 
 ## Auteur
 
+<<<<<<< HEAD
 Andriamasy Lorraine Agnès RAHELIARISOA — Étudiante en cycle ingénieur, filière Génie Logiciel et Systèmes Intelligents (FST Tanger)
+=======
+Andriamasy Lorraine Agnès RAHELIARISOA — Étudiante en cycle ingénieur, filière Logiciels et Systèmes Intelligents (FST Tanger)
+>>>>>>> ccc61a406dec9fc1d3a837f72d48da89e13a5e56
