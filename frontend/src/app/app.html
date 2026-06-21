@@ -1,14 +1,58 @@
 <div class="app-shell">
-  <header class="app-header">
-    <a routerLink="/produits" class="app-header__brand">
-      <span class="app-header__mark">GP</span>
-      <span class="app-header__name">Gestion de Produits</span>
+  <aside class="sidebar">
+    <a routerLink="/produits" class="sidebar__brand">
+      <span class="sidebar__mark">GP</span>
+      <span class="sidebar__name">Gestion de<br />Produits</span>
     </a>
-  </header>
 
-  <main class="app-main">
-    <router-outlet />
-  </main>
+    <nav class="sidebar__nav">
+      <a routerLink="/produits" routerLinkActive="sidebar__link--active" [routerLinkActiveOptions]="{ exact: true }" class="sidebar__link">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5v-9z" stroke-linejoin="round" />
+          <path d="M3 7.5l9 4.5 9-4.5M12 12v9" stroke-linejoin="round" />
+        </svg>
+        <span>Catalogue</span>
+      </a>
+      <a routerLink="/produits/nouveau" routerLinkActive="sidebar__link--active" class="sidebar__link">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+        </svg>
+        <span>Nouveau produit</span>
+      </a>
+    </nav>
+
+    @if (categories().length > 0) {
+      <div class="sidebar__section">
+        <p class="sidebar__section-title">Catégories</p>
+        <nav class="sidebar__nav">
+          @for (cat of categories(); track cat) {
+            <a
+              [routerLink]="['/produits']"
+              [queryParams]="{ category: cat }"
+              class="sidebar__link sidebar__link--category"
+            >
+              <span class="sidebar__dot"></span>
+              <span>{{ cat }}</span>
+              <span class="sidebar__count">
+                {{ countByCategory(cat) }}
+              </span>
+            </a>
+          }
+        </nav>
+      </div>
+    }
+
+    <div class="sidebar__footer">
+      <p class="sidebar__footer-text">{{ products().length }} produit{{ products().length !== 1 ? 's' : '' }} au catalogue</p>
+      <p class="sidebar__footer-sub">Consult Collab — Test technique</p>
+    </div>
+  </aside>
+
+  <div class="app-body">
+    <main class="app-main">
+      <router-outlet />
+    </main>
+  </div>
 </div>
 
 <app-toast />

@@ -1,7 +1,7 @@
 .page {
-  max-width: 1080px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: var(--space-6) var(--space-5) var(--space-8);
+  padding: var(--space-6) var(--space-6) var(--space-8);
 }
 
 .page__header {
@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: var(--space-4);
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-6);
   flex-wrap: wrap;
 }
 
@@ -23,9 +23,103 @@
 .page__subtitle {
   margin: var(--space-2) 0 0 0;
   color: var(--color-text-secondary);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
 }
 
+.btn__icon {
+  width: 16px;
+  height: 16px;
+}
+
+// ============================================================
+// CARTES STATISTIQUES
+// ============================================================
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &--accent {
+    background: rgba(179, 99, 122, 0.1);
+    color: var(--color-accent);
+  }
+
+  &--success {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+  }
+
+  &--warning {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+  }
+
+  &--danger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+  }
+}
+
+.stat-card__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stat-card__value {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.stat-card__label {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ============================================================
+// BARRE D'OUTILS (recherche + filtre)
+// ============================================================
 .toolbar {
   display: flex;
   gap: var(--space-3);
@@ -33,10 +127,26 @@
   flex-wrap: wrap;
 }
 
-.toolbar__search {
+.toolbar__search-wrap {
+  position: relative;
   flex: 1;
   min-width: 220px;
-  padding: var(--space-3) var(--space-4);
+}
+
+.toolbar__search-icon {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.toolbar__search {
+  width: 100%;
+  padding: var(--space-3) var(--space-4) var(--space-3) calc(var(--space-4) * 2 + 16px);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -54,20 +164,34 @@
 }
 
 .toolbar__filter {
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-surface);
+  appearance: none;
+  -webkit-appearance: none;
+  padding: var(--space-3) calc(var(--space-4) * 2 + 4px) var(--space-3) var(--space-4);
+  background: var(--color-surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238c7177' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat right var(--space-3) center;
+  background-size: 16px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
   font-size: 0.875rem;
+  font-family: var(--font-body);
   cursor: pointer;
+  min-width: 200px;
 
   &:focus {
     outline: none;
     border-color: var(--color-accent);
   }
+
+  &:hover {
+    border-color: var(--color-text-muted);
+  }
 }
 
+// ============================================================
+// ÉTATS (chargement, erreur, vide)
+// ============================================================
 .state-message {
   padding: var(--space-8) 0;
   text-align: center;
@@ -108,6 +232,9 @@
   max-width: 360px;
 }
 
+// ============================================================
+// TABLEAU
+// ============================================================
 .table-wrapper {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -159,9 +286,38 @@
 
 .product-cell {
   display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 360px;
+}
+
+.product-cell__thumb {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+
+  &--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.product-cell__text {
+  display: flex;
   flex-direction: column;
   gap: 2px;
-  max-width: 320px;
+  min-width: 0;
 }
 
 .product-cell__name {
@@ -248,10 +404,5 @@
     flex-direction: row;
     justify-content: flex-start;
     padding-top: var(--space-2);
-
-    .btn {
-      flex: 1;
-    }
   }
 }
-

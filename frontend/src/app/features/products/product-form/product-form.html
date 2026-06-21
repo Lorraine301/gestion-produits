@@ -80,19 +80,63 @@
 
       <div class="form__row">
         <label class="form__label" for="category">Catégorie</label>
-        <select
-          id="category"
-          formControlName="category"
-          class="form__input form__input--select"
-          [class.form__input--error]="isFieldInvalid('category')"
-        >
-          <option value="" disabled>Sélectionnez une catégorie</option>
-          @for (cat of categories; track cat) {
-            <option [value]="cat">{{ cat }}</option>
+        @if (!isCreatingCategory()) {
+          <select
+            id="category"
+            class="form__input form__input--select"
+            [class.form__input--error]="isFieldInvalid('category')"
+            [value]="form.get('category')?.value"
+            (change)="onCategoryChange($any($event.target).value)"
+          >
+            <option value="" disabled>Sélectionnez une catégorie</option>
+            @for (cat of categories(); track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+            <option [value]="NEW_CATEGORY_OPTION">+ Ajouter une nouvelle catégorie</option>
+          </select>
+          @if (isFieldInvalid('category')) {
+            <span class="form__error">Veuillez sélectionner une catégorie.</span>
           }
-        </select>
-        @if (isFieldInvalid('category')) {
-          <span class="form__error">Veuillez sélectionner une catégorie.</span>
+        } @else {
+          <div class="form__new-category">
+            <input
+              id="newCategory"
+              type="text"
+              formControlName="newCategory"
+              class="form__input"
+              [class.form__input--error]="isFieldInvalid('newCategory')"
+              placeholder="Nom de la nouvelle catégorie"
+              autofocus
+            />
+            <button type="button" class="btn btn--ghost btn--sm" (click)="cancelNewCategory()">
+              Annuler
+            </button>
+          </div>
+          @if (isFieldInvalid('newCategory')) {
+            <span class="form__error">Le nom de la catégorie est obligatoire.</span>
+          }
+        }
+      </div>
+
+      <div class="form__row">
+        <label class="form__label" for="imageUrl">Image du produit (optionnel)</label>
+        <input
+          id="imageUrl"
+          type="url"
+          formControlName="imageUrl"
+          class="form__input"
+          [class.form__input--error]="isFieldInvalid('imageUrl')"
+          placeholder="https://exemple.com/image.jpg"
+        />
+        @if (isFieldInvalid('imageUrl')) {
+          <span class="form__error">L'URL doit commencer par http:// ou https://</span>
+        } @else {
+          <span class="form__hint">Collez le lien d'une image hébergée en ligne.</span>
+        }
+        @if (form.get('imageUrl')?.value && !isFieldInvalid('imageUrl')) {
+          <div class="form__image-preview">
+            <img [src]="form.get('imageUrl')?.value" alt="Aperçu de l'image du produit" />
+          </div>
         }
       </div>
 

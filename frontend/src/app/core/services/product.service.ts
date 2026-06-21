@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Product, ProductInput } from '../models/product.model';
+import { DEFAULT_PRODUCT_CATEGORIES, Product, ProductInput } from '../models/product.model';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -26,6 +26,13 @@ export class ProductService {
   /** Liste réactive des produits, tenue à jour après chaque opération. */
   readonly products = signal<Product[]>([]);
 
+  /**
+   * Catégories disponibles dans l'application : démarre avec les catégories
+   * par défaut, puis se complète avec toute catégorie réellement utilisée
+   * en base (y compris celles créées librement par l'utilisateur).
+   */
+  readonly categories = signal<string[]>([...DEFAULT_PRODUCT_CATEGORIES]);
+
   constructor(private readonly http: HttpClient) {}
 
   /** Récupère tous les produits et met à jour le signal `products`. */
@@ -38,6 +45,25 @@ export class ProductService {
   /** Récupère un produit unique par son identifiant. */
   getById(id: string): Observable<ApiResponse<Product>> {
     return this.http.get<ApiResponse<Product>>(`${this.apiUrl}/${id}`);
+  }
+
+  /** Récupère les catégories distinctes existantes en base et met à jour le signal local. */
+  getCategories(): Observable<ApiResponse<string[]>> {
+    return this.http.get<ApiResponse<string[]>>(`${this.apiUrl}/categories`).pipe(
+      tap((response) => {
+        const merged = new Set([...DEFAULT_PRODUCT_CATEGORIES, ...response.data]);
+        this.categories.set(Array.from(merged).sort((a, b) => a.localeCompare(b, 'fr')));
+      })
+    );
+  }
+
+  /** Ajoute localement une catégorie nouvellement créée (avant même le rechargement depuis l'API). */
+  addLocalCategory(category: string): void {
+    this.categories.update((current) =>
+      current.includes(category)
+        ? current
+        : [...current, category].sort((a, b) => a.localeCompare(b, 'fr'))
+    );
   }
 
   /** Crée un nouveau produit et l'ajoute à la liste locale. */

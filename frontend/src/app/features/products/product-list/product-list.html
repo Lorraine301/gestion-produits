@@ -2,23 +2,83 @@
   <header class="page__header">
     <div class="page__heading">
       <h1>Catalogue de produits</h1>
-      <p class="page__subtitle">
-        {{ products().length }} produit{{ products().length !== 1 ? 's' : '' }} ·
-        valeur totale du stock : {{ totalStockValue() | number: '1.2-2' }} MAD
-      </p>
+      <p class="page__subtitle">Vue d'ensemble de votre inventaire</p>
     </div>
-    <a routerLink="/produits/nouveau" class="btn btn--primary">+ Nouveau produit</a>
+    <a routerLink="/produits/nouveau" class="btn btn--primary">
+      <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+      </svg>
+      Nouveau produit
+    </a>
   </header>
 
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--accent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5v-9z" stroke-linejoin="round" />
+          <path d="M3 7.5l9 4.5 9-4.5M12 12v9" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="stat-card__body">
+        <span class="stat-card__value">{{ products().length }}</span>
+        <span class="stat-card__label">Produit{{ products().length !== 1 ? 's' : '' }} au catalogue</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6" stroke-linecap="round" />
+        </svg>
+      </div>
+      <div class="stat-card__body">
+        <span class="stat-card__value">{{ totalStockValue() | number: '1.0-0' }} MAD</span>
+        <span class="stat-card__label">Valeur totale du stock</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 9v4M12 17h.01" stroke-linecap="round" />
+          <path d="M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L14.7 3.86a2 2 0 00-3.4 0z" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="stat-card__body">
+        <span class="stat-card__value">{{ lowStockCount() }}</span>
+        <span class="stat-card__label">Stock faible</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--danger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" />
+        </svg>
+      </div>
+      <div class="stat-card__body">
+        <span class="stat-card__value">{{ outOfStockCount() }}</span>
+        <span class="stat-card__label">En rupture</span>
+      </div>
+    </div>
+  </div>
+
   <div class="toolbar">
-    <input
-      type="search"
-      class="toolbar__search"
-      placeholder="Rechercher un produit par nom…"
-      [ngModel]="searchTerm()"
-      (ngModelChange)="searchTerm.set($event)"
-      aria-label="Rechercher un produit"
-    />
+    <div class="toolbar__search-wrap">
+      <svg class="toolbar__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7" />
+        <path d="M21 21l-4.3-4.3" stroke-linecap="round" />
+      </svg>
+      <input
+        type="search"
+        class="toolbar__search"
+        placeholder="Rechercher un produit par nom…"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+        aria-label="Rechercher un produit"
+      />
+    </div>
     <select
       class="toolbar__filter"
       [ngModel]="selectedCategory()"
@@ -26,7 +86,7 @@
       aria-label="Filtrer par catégorie"
     >
       <option value="">Toutes les catégories</option>
-      @for (cat of categories; track cat) {
+      @for (cat of categories(); track cat) {
         <option [value]="cat">{{ cat }}</option>
       }
     </select>
@@ -69,8 +129,25 @@
             <tr>
               <td>
                 <div class="product-cell">
-                  <span class="product-cell__name">{{ product.name }}</span>
-                  <span class="product-cell__description">{{ product.description }}</span>
+                  @if (product.imageUrl) {
+                    <img
+                      [src]="product.imageUrl"
+                      [alt]="product.name"
+                      class="product-cell__thumb"
+                    />
+                  } @else {
+                    <div class="product-cell__thumb product-cell__thumb--placeholder">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <rect x="3" y="5" width="18" height="14" rx="2" stroke-linejoin="round" />
+                        <path d="M3 15l4.5-4.5a2 2 0 012.8 0L15 15M14 14l1.5-1.5a2 2 0 012.8 0L21 15" stroke-linejoin="round" stroke-linecap="round" />
+                        <circle cx="8.5" cy="9" r="1.25" />
+                      </svg>
+                    </div>
+                  }
+                  <div class="product-cell__text">
+                    <span class="product-cell__name">{{ product.name }}</span>
+                    <span class="product-cell__description">{{ product.description }}</span>
+                  </div>
                 </div>
               </td>
               <td>
@@ -88,17 +165,38 @@
               </td>
               <td class="table__actions">
                 <a
-                  [routerLink]="['/produits', product._id, 'modifier']"
-                  class="btn btn--ghost btn--sm"
+                  [routerLink]="['/produits', product._id]"
+                  class="icon-btn icon-btn--ghost"
+                  title="Voir le détail"
+                  aria-label="Voir le détail du produit"
                 >
-                  Modifier
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z" stroke-linejoin="round" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </a>
+                <a
+                  [routerLink]="['/produits', product._id, 'modifier']"
+                  class="icon-btn icon-btn--ghost"
+                  title="Modifier"
+                  aria-label="Modifier le produit"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M12 20h9" stroke-linecap="round" />
+                    <path d="M16.5 3.5a2.12 2.12 0 113 3L7 19l-4 1 1-4 12.5-12.5z" stroke-linejoin="round" />
+                  </svg>
                 </a>
                 <button
                   type="button"
-                  class="btn btn--danger btn--sm"
+                  class="icon-btn icon-btn--danger"
+                  title="Supprimer"
+                  aria-label="Supprimer le produit"
                   (click)="requestDelete(product)"
                 >
-                  Supprimer
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" stroke-linejoin="round" stroke-linecap="round" />
+                    <path d="M10 11v6M14 11v6" stroke-linecap="round" />
+                  </svg>
                 </button>
               </td>
             </tr>

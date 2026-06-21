@@ -34,17 +34,16 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, 'La catégorie est obligatoire'],
       trim: true,
-      enum: {
-        values: [
-          'Électronique',
-          'Vêtements',
-          'Alimentation',
-          'Mobilier',
-          'Beauté & Hygiène',
-          'Sport & Loisirs',
-          'Autre',
-        ],
-        message: '{VALUE} n\'est pas une catégorie valide',
+      minlength: [2, 'La catégorie doit contenir au moins 2 caractères'],
+      maxlength: [40, 'La catégorie ne peut pas dépasser 40 caractères'],
+    },
+    imageUrl: {
+      type: String,
+      trim: true,
+      default: '',
+      validate: {
+        validator: (value) => !value || /^https?:\/\/.+/i.test(value),
+        message: 'L\'URL de l\'image doit commencer par http:// ou https://',
       },
     },
   },

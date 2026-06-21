@@ -114,10 +114,28 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Récupérer la liste des catégories distinctes déjà utilisées
+ * @route   GET /api/products/categories
+ * @access  Public
+ */
+const getCategories = async (req, res, next) => {
+  try {
+    const categories = await Product.distinct('category');
+    res.status(200).json({
+      success: true,
+      data: categories.sort((a, b) => a.localeCompare(b, 'fr')),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
+  getCategories,
 };

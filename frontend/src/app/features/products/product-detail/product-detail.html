@@ -1,0 +1,85 @@
+<div class="page">
+  <a routerLink="/produits" class="back-link">← Retour au catalogue</a>
+
+  @if (isLoading()) {
+    <div class="state-message">Chargement du produit…</div>
+  } @else if (loadError() || !product()) {
+    <div class="state-message state-message--error">
+      <p>Impossible de trouver ce produit.</p>
+      <a routerLink="/produits" class="btn btn--ghost btn--sm">Retour au catalogue</a>
+    </div>
+  } @else {
+    @let p = product()!;
+    <div class="detail">
+      <div class="detail__media">
+        @if (p.imageUrl) {
+          <img [src]="p.imageUrl" [alt]="p.name" class="detail__image" />
+        } @else {
+          <div class="detail__image detail__image--placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+              <rect x="3" y="5" width="18" height="14" rx="2" stroke-linejoin="round" />
+              <path d="M3 15l4.5-4.5a2 2 0 012.8 0L15 15M14 14l1.5-1.5a2 2 0 012.8 0L21 15" stroke-linejoin="round" stroke-linecap="round" />
+              <circle cx="8.5" cy="9" r="1.25" />
+            </svg>
+          </div>
+        }
+      </div>
+
+      <div class="detail__content">
+        <span class="badge">{{ p.category }}</span>
+        <h1 class="detail__title">{{ p.name }}</h1>
+        <p class="detail__description">{{ p.description }}</p>
+
+        <div class="detail__stats">
+          <div class="detail__stat">
+            <span class="detail__stat-label">Prix</span>
+            <span class="detail__stat-value">{{ p.price | number: '1.2-2' }} MAD</span>
+          </div>
+          <div class="detail__stat">
+            <span class="detail__stat-label">Quantité en stock</span>
+            <span
+              class="detail__stat-value"
+              [class.detail__stat-value--low]="isLowStock(p)"
+              [class.detail__stat-value--out]="isOutOfStock(p)"
+            >
+              {{ p.quantity }}
+              @if (isOutOfStock(p)) {
+                <span class="detail__stat-tag detail__stat-tag--danger">Rupture</span>
+              } @else if (isLowStock(p)) {
+                <span class="detail__stat-tag detail__stat-tag--warning">Stock faible</span>
+              }
+            </span>
+          </div>
+          <div class="detail__stat">
+            <span class="detail__stat-label">Valeur du stock</span>
+            <span class="detail__stat-value">{{ p.price * p.quantity | number: '1.2-2' }} MAD</span>
+          </div>
+        </div>
+
+        <div class="detail__meta">
+          <span>Ajouté le {{ p.createdAt | date: 'dd/MM/yyyy à HH:mm' }}</span>
+          @if (p.updatedAt !== p.createdAt) {
+            <span>· Modifié le {{ p.updatedAt | date: 'dd/MM/yyyy à HH:mm' }}</span>
+          }
+        </div>
+
+        <div class="detail__actions">
+          <a [routerLink]="['/produits', p._id, 'modifier']" class="btn btn--primary">
+            Modifier ce produit
+          </a>
+          <button type="button" class="btn btn--danger" (click)="requestDelete()">
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<app-confirm-dialog
+  [isOpen]="showDeleteConfirm()"
+  title="Supprimer ce produit ?"
+  [message]="'Cette action est définitive. \'' + (product()?.name ?? '') + '\' sera supprimé du catalogue.'"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()"
+/>

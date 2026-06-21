@@ -1,11 +1,11 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog';
-import { PRODUCT_CATEGORIES, Product } from '../../../core/models/product.model';
+import { Product } from '../../../core/models/product.model';
 
 /**
  * Page principale de l'application : affiche le catalogue de produits
@@ -22,8 +22,9 @@ import { PRODUCT_CATEGORIES, Product } from '../../../core/models/product.model'
 export class ProductListComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly toastService = inject(ToastService);
+  private readonly route = inject(ActivatedRoute);
 
-  readonly categories = PRODUCT_CATEGORIES;
+  readonly categories = this.productService.categories;
   readonly products = this.productService.products;
 
   readonly isLoading = signal(true);
@@ -50,8 +51,22 @@ export class ProductListComponent implements OnInit {
     this.products().reduce((sum, p) => sum + p.price * p.quantity, 0)
   );
 
+  readonly outOfStockCount = computed(
+    () => this.products().filter((p) => p.quantity === 0).length
+  );
+
+  readonly lowStockCount = computed(
+    () => this.products().filter((p) => p.quantity > 0 && p.quantity <= 5).length
+  );
+
   ngOnInit(): void {
     this.fetchProducts();
+    this.productService.getCategories().subscribe();
+
+    const categoryParam = this.route.snapshot.queryParamMap.get('category');
+    if (categoryParam) {
+      this.selectedCategory.set(categoryParam);
+    }
   }
 
   fetchProducts(): void {

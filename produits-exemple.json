@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Casque audio sans fil",
+    "description": "Casque Bluetooth avec réduction de bruit active et 30h d'autonomie",
+    "price": 499.90,
+    "quantity": 12,
+    "category": "Électronique"
+  },
+  {
+    "name": "Clavier mécanique RGB",
+    "description": "Clavier gaming avec switches mécaniques et rétroéclairage personnalisable",
+    "price": 349.00,
+    "quantity": 8,
+    "category": "Électronique"
+  },
+  {
+    "name": "Chargeur sans fil 15W",
+    "description": "Station de charge rapide compatible avec tous les smartphones Qi",
+    "price": 129.00,
+    "quantity": 25,
+    "category": "Électronique"
+  },
+  {
+    "name": "T-shirt en coton bio",
+    "description": "T-shirt unisexe coupe classique, 100% coton biologique certifié",
+    "price": 89.00,
+    "quantity": 40,
+    "category": "Vêtements"
+  },
+  {
+    "name": "Veste imperméable",
+    "description": "Veste légère et respirante, idéale pour la pluie et le vent",
+    "price": 449.00,
+    "quantity": 3,
+    "category": "Vêtements"
+  },
+  {
+    "name": "Huile d'olive extra vierge",
+    "description": "Huile d'olive première pression à froid, bouteille de 1L",
+    "price": 75.50,
+    "quantity": 60,
+    "category": "Alimentation"
+  },
+  {
+    "name": "Miel de fleurs sauvages",
+    "description": "Miel artisanal récolté localement, pot de 500g",
+    "price": 95.00,
+    "quantity": 0,
+    "category": "Alimentation"
+  },
+  {
+    "name": "Chaise de bureau ergonomique",
+    "description": "Chaise réglable avec support lombaire et accoudoirs ajustables",
+    "price": 1299.00,
+    "quantity": 5,
+    "category": "Mobilier"
+  },
+  {
+    "name": "Table basse en bois massif",
+    "description": "Table basse au design scandinave, bois de chêne massif",
+    "price": 899.00,
+    "quantity": 4,
+    "category": "Mobilier"
+  },
+  {
+    "name": "Crème hydratante visage",
+    "description": "Crème de jour hydratante pour tous types de peau, 50ml",
+    "price": 159.00,
+    "quantity": 18,
+    "category": "Beauté & Hygiène"
+  },
+  {
+    "name": "Tapis de yoga antidérapant",
+    "description": "Tapis de yoga épais avec sangle de transport incluse",
+    "price": 199.00,
+    "quantity": 15,
+    "category": "Sport & Loisirs"
+  },
+  {
+    "name": "Ballon de football taille 5",
+    "description": "Ballon homologué pour terrain extérieur et intérieur",
+    "price": 149.00,
+    "quantity": 2,
+    "category": "Sport & Loisirs"
+  }
+]

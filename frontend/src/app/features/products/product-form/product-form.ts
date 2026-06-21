@@ -3,19 +3,10 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { PRODUCT_CATEGORIES } from '../../../core/models/product.model';
 
-/**
- * Formulaire de création / édition d'un produit.
- * Le même composant gère les deux cas : s'il trouve un `id` dans l'URL,
- * il bascule en mode édition et pré-remplit le formulaire avec les
- * données existantes, sinon il reste en mode création.
- *
- * L'état (isLoading, isSubmitting, productId) est stocké dans des signals :
- * Angular fonctionne ici en mode "zoneless" (sans zone.js), donc une simple
- * propriété de classe modifiée dans un callback HTTP ne déclenche pas de
- * nouveau rendu — seul un signal le garantit.
- */
+/** Valeur spéciale utilisée dans le select pour déclencher la création d'une nouvelle catégorie */
+export const NEW_CATEGORY_OPTION = '__new__';
+
 @Component({
   selector: 'app-product-form',
   imports: [ReactiveFormsModule, RouterLink],
@@ -29,18 +20,22 @@ export class ProductFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly categories = PRODUCT_CATEGORIES;
+  readonly NEW_CATEGORY_OPTION = NEW_CATEGORY_OPTION;
+  readonly categories = this.productService.categories;
 
   readonly productId = signal<string | null>(null);
   readonly isSubmitting = signal(false);
   readonly isLoading = signal(false);
+  readonly isCreatingCategory = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
     description: ['', [Validators.required, Validators.maxLength(500)]],
     price: [0, [Validators.required, Validators.min(0)]],
     quantity: [0, [Validators.required, Validators.min(0)]],
-    category: ['' as string, [Validators.required]],
+    category: ['', [Validators.required]],
+    newCategory: [''],
+    imageUrl: ['', [Validators.pattern(/^https?:\/\/.+/i)]],
   });
 
   get isEditMode(): boolean {
@@ -48,6 +43,9 @@ export class ProductFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Charge les catégories existantes depuis l’API
+    this.productService.getCategories().subscribe();
+
     const id = this.route.snapshot.paramMap.get('id');
     this.productId.set(id);
 
@@ -56,24 +54,83 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
+  /**
+   * Réagit au changement de catégorie dans le select.
+   * Si l’utilisateur choisit "+ Ajouter une nouvelle catégorie",
+   * on affiche un champ texte libre.
+   */
+  onCategoryChange(value: string): void {
+    if (value === NEW_CATEGORY_OPTION) {
+      this.isCreatingCategory.set(true);
+
+      this.form.patchValue({
+        category: '',
+        newCategory: '',
+      });
+
+      this.form
+        .get('newCategory')
+        ?.setValidators([
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(40),
+        ]);
+    } else {
+      this.isCreatingCategory.set(false);
+
+      this.form.get('newCategory')?.clearValidators();
+
+      this.form.patchValue({
+        category: value,
+        newCategory: '',
+      });
+    }
+
+    this.form.get('newCategory')?.updateValueAndValidity();
+  }
+
+  /**
+   * Annule la création d'une nouvelle catégorie
+   * et revient au select classique.
+   */
+  cancelNewCategory(): void {
+    this.isCreatingCategory.set(false);
+
+    this.form.get('newCategory')?.clearValidators();
+    this.form.get('newCategory')?.updateValueAndValidity();
+
+    this.form.patchValue({
+      category: '',
+      newCategory: '',
+    });
+  }
+
+  /**
+   * Charge un produit existant pour l’édition
+   */
   private loadProduct(id: string): void {
     this.isLoading.set(true);
+
     this.productService.getById(id).subscribe({
       next: (response) => {
         const product = response?.data;
+
         if (!product) {
           this.toastService.error('Produit introuvable');
           this.isLoading.set(false);
           this.router.navigate(['/produits']);
           return;
         }
+
         this.form.patchValue({
           name: product.name,
           description: product.description,
           price: product.price,
           quantity: product.quantity,
           category: product.category,
+          imageUrl: product.imageUrl ?? '',
         });
+
         this.isLoading.set(false);
       },
       error: () => {
@@ -84,43 +141,83 @@ export class ProductFormComponent implements OnInit {
     });
   }
 
+  /**
+   * Soumission du formulaire
+   */
   onSubmit(): void {
+    const value = this.form.getRawValue();
+
+    // Si on crée une nouvelle catégorie,
+    // on la copie dans le champ category AVANT validation
+    if (this.isCreatingCategory()) {
+      const finalCategory = value.newCategory.trim();
+
+      if (finalCategory) {
+        this.form.patchValue({
+          category: finalCategory,
+        });
+      }
+    }
+
+    // Vérifie maintenant la validité complète
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.isSubmitting.set(true);
-    const value = this.form.getRawValue();
+
+    const finalValue = this.form.getRawValue();
+
     const productData = {
-      ...value,
-      category: value.category as (typeof this.categories)[number],
+      name: finalValue.name,
+      description: finalValue.description,
+      price: finalValue.price,
+      quantity: finalValue.quantity,
+      category: finalValue.category,
+      imageUrl: finalValue.imageUrl,
     };
 
     const id = this.productId();
+
     const request = this.isEditMode
       ? this.productService.update(id!, productData)
       : this.productService.create(productData);
 
     request.subscribe({
       next: () => {
+        // Ajouter la nouvelle catégorie localement
+        // pour qu’elle apparaisse immédiatement dans la liste
+        if (this.isCreatingCategory()) {
+          this.productService.addLocalCategory(finalValue.category);
+        }
+
         this.toastService.success(
-          this.isEditMode ? 'Produit modifié avec succès' : 'Produit créé avec succès'
+          this.isEditMode
+            ? 'Produit modifié avec succès'
+            : 'Produit créé avec succès'
         );
+
         this.router.navigate(['/produits']);
       },
       error: (err) => {
         this.toastService.error(
-          err.error?.message || 'Une erreur est survenue, veuillez réessayer'
+          err.error?.message ||
+            'Une erreur est survenue, veuillez réessayer'
         );
+
         this.isSubmitting.set(false);
       },
     });
   }
 
-  /** Raccourci pour le template : indique si un champ est invalide et a été touché. */
+  /**
+   * Vérifie si un champ est invalide
+   * et a déjà été touché
+   */
   isFieldInvalid(fieldName: string): boolean {
     const field = this.form.get(fieldName);
+
     return !!field && field.invalid && (field.touched || field.dirty);
   }
 }

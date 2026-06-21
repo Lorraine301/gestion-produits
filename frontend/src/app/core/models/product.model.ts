@@ -1,8 +1,10 @@
 /**
- * Catégories disponibles pour un produit.
- * Doit rester synchronisé avec l'enum définie côté backend (Product.js).
+ * Catégories proposées par défaut dans le formulaire.
+ * L'utilisateur peut aussi créer librement de nouvelles catégories ;
+ * la liste réelle des catégories existantes est récupérée depuis l'API
+ * (voir ProductService.getCategories()).
  */
-export const PRODUCT_CATEGORIES = [
+export const DEFAULT_PRODUCT_CATEGORIES = [
   'Électronique',
   'Vêtements',
   'Alimentation',
@@ -12,7 +14,8 @@ export const PRODUCT_CATEGORIES = [
   'Autre',
 ] as const;
 
-export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
+/** Une catégorie est une chaîne libre : l'utilisateur peut en créer de nouvelles. */
+export type ProductCategory = string;
 
 /**
  * Représente un produit tel que renvoyé par l'API (avec son identifiant et ses dates).
@@ -24,6 +27,7 @@ export interface Product {
   price: number;
   quantity: number;
   category: ProductCategory;
+  imageUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
