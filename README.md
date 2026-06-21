@@ -191,9 +191,7 @@ Un middleware Express unique (`errorHandler.js`) intercepte toutes les erreurs d
 Le modèle de données ne contraint plus la catégorie à une liste fermée (enum) : le backend expose un endpoint dédié (`GET /api/products/categories`) qui retourne les catégories réellement utilisées en base. Le formulaire propose des catégories par défaut tout en permettant à l'utilisateur d'en créer de nouvelles à la volée, ce qui rend le catalogue évolutif sans nécessiter de modification du code pour ajouter une nouvelle catégorie de produits.
 
 ## Auteur
-
-<<<<<<< HEAD
 Andriamasy Lorraine Agnès RAHELIARISOA — Étudiante en cycle ingénieur, filière Génie Logiciel et Systèmes Intelligents (FST Tanger)
 =======
-Andriamasy Lorraine Agnès RAHELIARISOA — Étudiante en cycle ingénieur, filière Logiciels et Systèmes Intelligents (FST Tanger)
->>>>>>> ccc61a406dec9fc1d3a837f72d48da89e13a5e56
+
+
